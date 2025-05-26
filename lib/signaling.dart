@@ -11,10 +11,9 @@ class Signaling {
     /// This configuration used for know the public ip of system
     'iceServers': [
       {
-        'urls': [
-          'stun:stun1.l.google.com:19302',
-          'stun:stun2.l.google.com:19302',
-        ],
+        "urls": ["turn:relay1.expressturn.com:3480"],
+        "username": "174826260755106479",
+        "credential": "d1mnSiSsSd/N284JFYsVnHb8NMw=",
       },
     ],
   };
@@ -29,7 +28,8 @@ class Signaling {
     /// Create peer connection with configuration
     debugPrint("Create peer connection with configuration");
     rtcPeerConnection = await createPeerConnection(configuration, {
-      'mandatory': {'OfferToReceiveAudio': true, 'OfferToReceiveVideo': true},
+      'mandatory': {'OfferToReceiveAudio': false, 'OfferToReceiveVideo': true},
+      'optional': [],
     });
 
     /// Register peer connection listeners
@@ -73,6 +73,7 @@ class Signaling {
       event.streams[0].getTracks().forEach((track) {
         debugPrint("Add a track to the remote stream $track");
         remoteStream?.addTrack(track);
+        onAddRemoteStream?.call(event.streams[0]);
       });
     };
     // Listening for remote session description below
@@ -121,7 +122,11 @@ class Signaling {
       /// create peer connection
       debugPrint('Create PeerConnection with configuration: $configuration');
       rtcPeerConnection = await createPeerConnection(configuration, {
-        'mandatory': {'OfferToReceiveAudio': true, 'OfferToReceiveVideo': true},
+        'mandatory': {
+          'OfferToReceiveAudio': false,
+          'OfferToReceiveVideo': true,
+        },
+        'optional': [],
       });
 
       /// Add register peer listeners
@@ -152,6 +157,7 @@ class Signaling {
           debugPrint("Add a track to the remote stream $track");
           remoteStream?.addTrack(track);
         });
+        onAddRemoteStream?.call(event.streams[0]);
       };
 
       final data = roomSnapshots.data() as Map<String, dynamic>;
@@ -223,6 +229,11 @@ class Signaling {
       debugPrint("Remote stream detected");
       onAddRemoteStream?.call(stream);
       remoteStream = stream;
+    };
+
+    rtcPeerConnection?.onTrack = (RTCTrackEvent event) {
+      debugPrint("Remote stream detected on track");
+      onAddRemoteStream?.call(remoteStream!);
     };
   }
 

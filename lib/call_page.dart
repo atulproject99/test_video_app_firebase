@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:test_video_app_firebase/signaling_new.dart';
+import 'package:test_video_app_firebase/signaling.dart';
 
 class CallPage extends StatefulWidget {
   const CallPage({super.key});
@@ -70,18 +70,13 @@ class _CallPageState extends State<CallPage> {
             Expanded(
               child: _CustomButtonHandler(
                 onTapOpenCameraAndAudio: () {
-                  signaling.openUserMedia(_localRenderer, _remoteRenderer);
+                  signaling.openMedia(_localRenderer, _remoteRenderer);
                 },
                 onTapCreateRoom: () async {
-                  final roomId = await signaling.createRoom(_remoteRenderer);
-                  _textEditingController.text = roomId;
-                  setState(() {});
+                  await signaling.createRoom();
                 },
                 onTapJoinRoom: () {
-                  signaling.joinRoom(
-                    _textEditingController.text,
-                    _remoteRenderer,
-                  );
+                  signaling.joinRoom(_textEditingController.text);
                 },
                 onTapHangup: () {},
               ),
