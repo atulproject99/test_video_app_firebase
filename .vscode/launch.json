@@ -1,0 +1,37 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "test_video_app_firebase",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "test_video_app_firebase (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "test_video_app_firebase (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+
+           {
+    "name": "Flutter for web (hot reloadable)",
+    "type": "dart",
+    "request": "launch",
+    "program": "lib/main.dart",
+    "args": [
+      "-d",
+      "chrome",
+      "--web-experimental-hot-reload",
+    ]
+  }
+    ]
+}
