@@ -73,7 +73,8 @@ class Signaling {
       event.streams[0].getTracks().forEach((track) {
         debugPrint("Add a track to the remote stream $track");
         remoteStream?.addTrack(track);
-        onAddRemoteStream?.call(event.streams[0]);
+
+        /// onAddRemoteStream?.call(event.streams[0]);
       });
     };
     // Listening for remote session description below
@@ -157,7 +158,7 @@ class Signaling {
           debugPrint("Add a track to the remote stream $track");
           remoteStream?.addTrack(track);
         });
-        onAddRemoteStream?.call(event.streams[0]);
+        // onAddRemoteStream?.call(event.streams[0]);
       };
 
       final data = roomSnapshots.data() as Map<String, dynamic>;
@@ -233,7 +234,7 @@ class Signaling {
 
     rtcPeerConnection?.onTrack = (RTCTrackEvent event) {
       debugPrint("Remote stream detected on track");
-      onAddRemoteStream?.call(remoteStream!);
+      onAddRemoteStream?.call(event.streams[0]);
     };
   }
 
