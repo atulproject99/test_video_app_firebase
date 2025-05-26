@@ -21,6 +21,7 @@ class Signaling {
   MediaStream? localStream;
   MediaStream? remoteStream;
   StreamStateCallback? onAddRemoteStream;
+  String? currentRoomId;
   Future<void> createRoom() async {
     FirebaseFirestore db = FirebaseFirestore.instance;
     DocumentReference roomRef = db.collection('rooms').doc();
@@ -109,7 +110,7 @@ class Signaling {
         }
       }
     });
-
+    currentRoomId = roomId;
     debugPrint("Room id is $roomId");
   }
 
@@ -210,22 +211,6 @@ class Signaling {
       debugPrint('ICE connection state change: $state');
     };
 
-    // rtcPeerConnection?.onTrack = (RTCTrackEvent event) {
-    //   print('Got remote track: ${event.streams[0]}');
-
-    //   if (remoteStream == null) {
-    //     remoteStream = event.streams[0];
-    //   } else {
-    //     // Avoid duplicate tracks
-    //     event.streams[0].getTracks().forEach((track) {
-    //       remoteStream?.addTrack(track);
-    //     });
-    //   }
-
-    //   // 👇 Assign the stream to the remote video renderer
-    //   remoteVideo.srcObject = remoteStream;
-    // };
-
     rtcPeerConnection?.onAddStream = (MediaStream stream) {
       debugPrint("Remote stream detected");
       onAddRemoteStream?.call(stream);
@@ -236,6 +221,35 @@ class Signaling {
       debugPrint("Remote stream detected on track");
       onAddRemoteStream?.call(event.streams[0]);
     };
+  }
+
+  Future<void> hangup(RTCVideoRenderer localVideo) async {
+    List<MediaStreamTrack> tracks = localVideo.srcObject!.getTracks();
+    for (var track in tracks) {
+      track.stop();
+    }
+    if (remoteStream != null) {
+      remoteStream!.getTracks().forEach((track) => track.stop());
+    }
+    if (rtcPeerConnection != null) rtcPeerConnection!.close();
+    if (currentRoomId != null) {
+      var db = FirebaseFirestore.instance;
+      var roomRef = db.collection('rooms').doc(currentRoomId);
+      var calleeCandidates = await roomRef.collection('calleeCandidates').get();
+      for (var document in calleeCandidates.docs) {
+        document.reference.delete();
+      }
+
+      var callerCandidates = await roomRef.collection('callerCandidates').get();
+      for (var document in callerCandidates.docs) {
+        document.reference.delete();
+      }
+
+      await roomRef.delete();
+    }
+
+    localStream!.dispose();
+    remoteStream?.dispose();
   }
 
   void openMedia(

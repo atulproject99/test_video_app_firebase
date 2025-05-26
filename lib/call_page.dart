@@ -78,7 +78,9 @@ class _CallPageState extends State<CallPage> {
                 onTapJoinRoom: () {
                   signaling.joinRoom(_textEditingController.text);
                 },
-                onTapHangup: () {},
+                onTapHangup: () {
+                  signaling.hangup(_localRenderer);
+                },
               ),
             ),
 
