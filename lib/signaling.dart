@@ -32,9 +32,6 @@ class Signaling {
       'optional': [],
     });
 
-    /// Register peer connection listeners
-    registerPeerConnectionListener();
-
     /// Fetch each track from local stream and add into connection
 
     localStream?.getTracks().forEach((track) {
@@ -77,6 +74,10 @@ class Signaling {
         /// onAddRemoteStream?.call(event.streams[0]);
       });
     };
+
+    /// Register peer connection listeners
+    registerPeerConnectionListener();
+
     // Listening for remote session description below
 
     roomRef.snapshots().listen((snapshot) async {
@@ -130,9 +131,6 @@ class Signaling {
         'optional': [],
       });
 
-      /// Add register peer listeners
-      registerPeerConnectionListener();
-
       /// Add local stream track to connection
 
       localStream?.getTracks().forEach((track) {
@@ -161,6 +159,8 @@ class Signaling {
         // onAddRemoteStream?.call(event.streams[0]);
       };
 
+      /// Add register peer listeners
+      registerPeerConnectionListener();
       final data = roomSnapshots.data() as Map<String, dynamic>;
       debugPrint('Got offer $data');
       final offer = data['offer'];
